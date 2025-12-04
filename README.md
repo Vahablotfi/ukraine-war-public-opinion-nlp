@@ -30,9 +30,9 @@ The analysis is centered on five anchor events:
 
 Planned structure of this repository:
 
-├─ README.md # High-level overview of the project
-├─ REPORT.md # Detailed markdown report
-├─ requirements.txt # Python dependencies
+├─ README.md # High-level overview of the project.
+├─ REPORT.md # Detailed markdown report.
+├─ requirements.txt # Python dependencies.
 │
 ├─ data/
 │ ├─ raw/ # Raw data files (not tracked or with samples)
