@@ -30,26 +30,27 @@ The analysis is centered on five anchor events:
 
 Planned structure of this repository:
 
-├─ README.md # High-level overview of the project.
-├─ REPORT.md # Detailed markdown report.
-├─ requirements.txt # Python dependencies.
+ukraine-war-public-opinion-nlp/
+├─ README.md                      # High-level overview of the project
+├─ REPORT.md                      # Detailed markdown report
+├─ requirements.txt               # Python dependencies
 │
 ├─ data/
-│ ├─ raw/ # Raw data files (not tracked or with samples)
-│ └─ processed/ # Cleaned / processed data
+│   ├─ raw/                       # Raw data files (not tracked or with samples)
+│   └─ processed/                 # Cleaned / processed data
 │
 ├─ notebooks/
-│ ├─ 01_exploration.ipynb # Initial exploration & sanity checks
-│ ├─ 02_sentiment.ipynb # Sentiment analysis
-│ └─ 03_topics.ipynb # Topic modeling & keyword analysis
+│   ├─ 01_exploration.ipynb       # Initial exploration & sanity checks
+│   ├─ 02_sentiment.ipynb         # Sentiment analysis
+│   └─ 03_topics.ipynb            # Topic modeling & keyword analysis
 │
 ├─ src/
-│ ├─ preprocessing.py # Text cleaning functions
-│ ├─ sentiment.py # Sentiment utilities
-│ └─ topics.py # Topic modeling utilities
+│   ├─ preprocessing.py           # Text cleaning functions
+│   ├─ sentiment.py               # Sentiment utilities
+│   └─ topics.py                  # Topic modeling utilities
 │
 └─ app/
-└─ streamlit_app.py # Streamlit dashboard app
+    └─ streamlit_app.py           # Streamlit dashboard app
 
 ---
 
