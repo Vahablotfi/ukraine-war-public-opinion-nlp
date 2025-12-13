@@ -6,6 +6,9 @@ __pycache__/
 data/raw/*
 data/processed/*
 
+# Allow README files in data directories
+!data/**/README.md
+
 # Notebooks
 .ipynb_checkpoints/
 
