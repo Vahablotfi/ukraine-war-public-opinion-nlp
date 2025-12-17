@@ -15,3 +15,5 @@ data/processed/*
 # Environment
 .env
 venv/
+
+.DS_Store
