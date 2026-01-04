@@ -1,248 +1,427 @@
-# Public Opinion Shifts During the Ukraine War (2022–2025)
-
-## NLP Analysis of U.S. Online Discussions Around Five Key Events
-
----
+# Public Opinion on the Ukraine War: A Reddit-Based NLP Analysis (2022–2025)
 
 ## 1. Introduction
 
-Since the start of the Ukraine War in February 2022, public opinion in the United States has shifted in noticeable ways. In the early weeks, there was a strong sense of solidarity with Ukraine across social media, major news outlets, and political speeches. As the war continued, casualties increased, and U.S. politics moved into new phases, the tone from both political leaders and everyday users online appeared to change.
+Since the start of the war in Ukraine in February 2022, public opinion in the United States has gone through noticeable shifts. Early reactions were marked by strong solidarity with Ukraine, widespread emotional responses, and bipartisan political support. Over time, however, the war became prolonged, casualties mounted, and U.S. domestic politics increasingly shaped how the conflict was discussed—especially as debates around military aid, NATO involvement, and peace negotiations became more polarized.
 
-The motivation for this project came from my own curiosity. I remember the unity and support shown for Ukraine at the beginning of the war, and I wanted to understand how much these attitudes evolved over time. I also wondered whether changes in public sentiment followed the same pattern as political messaging in the U.S., especially once politicians began discussing cutting support or pushing for different strategies to end the conflict. This project aims to see whether similar shifts happened among regular social media users.
+This project began with a personal curiosity about whether these political shifts were reflected in everyday public discourse. I remembered the strong unity during the first weeks of the invasion and wondered how closely public sentiment followed changes in U.S. political messaging, particularly during later events such as the 2024 election and the 2025 White House meeting involving Ukraine.
 
-To explore this, the project examines **how U.S. public opinion shifted across five major events**:
+The core goal of this project is to examine **how public opinion about the Ukraine War evolved over time**, using Reddit comments as a proxy for online public discourse. The analysis focuses on five key events that represent military, political, or narrative turning points:
 
-1. **Battle for Kyiv (Feb–Mar 2022)**  
-2. **Kherson Liberation (Nov 2022)**  
-3. **2023 Stalemate / War Fatigue Narrative**  
-4. **Trump Election Victory (Nov 2024)**  
-5. **Trump–Zelenskyy White House Meeting (Feb 2025)**  
+- **Battle for Kyiv** (Feb–Mar 2022)
+- **Kherson Liberation** (Nov 2022)
+- **2023 Stalemate / War Fatigue Narrative**
+- **U.S. Presidential Election** (Nov 2024)
+- **Trump–Zelenskyy White House Meeting** (Feb 2025)
 
-Each of these events marks an important point in the military, political, or humanitarian timeline of the war. By analyzing Reddit posts from U.S.-based communities during these periods, this project aims to measure:
+Using natural language processing (NLP) techniques, the project examines changes in:
 
-- changes in sentiment toward Ukraine  
-- shifts in discussion topics  
-- signs of polarization in conversations about the war  
-- how much public opinion aligned or diverged from political messaging  
-
-Overall, this work helps build a clearer understanding of how a long-lasting international conflict influences public attitudes in the United States, especially during a time of political division.
+- sentiment toward the war,
+- dominant discussion topics,
+- polarization between U.S.-focused and non-U.S.-focused subreddits,
+- and stances toward ending the war versus continuing military support.
 
 ---
 
-## 2. Data Sources
+## 2. Data Sources and Constraints
 
-This project combines several types of data to study public opinion across the five events. Each source plays a different role in helping identify relevant posts and understanding how discussions changed over time.
+### 2.1 Reddit API Limitations
 
-### 2.1 Social Media Platforms
+The original plan for this project was to collect Reddit data directly using Reddit’s official API. However, access limitations, approval delays, and policy restrictions made sustained, large-scale data collection impractical within the project timeline. As a result, relying exclusively on live API scraping was not a feasible option for this analysis.
 
-#### **Reddit**
+### 2.2 Kaggle Reddit Dataset
 
-Reddit was used as the main data source for public discussions because:
+As an alternative, a large Reddit dataset related to the Ukraine War was sourced from Kaggle. This dataset contained approximately **5 GB of Reddit comments**, spanning from **2014 to mid-2025**, with particularly dense coverage between **2022 and 2025**.
 
-- comments are longer and more expressive compared to other platforms  
-- different subreddits have clear political or thematic orientations  
-- data is more accessible for academic projects  
-- many users openly share opinions, emotions, and reactions to news events  
+**Key advantages of this dataset include:**
 
-Data was collected from subreddits such as r/politics, r/worldnews, r/conservative, and r/UkrainianConflict.
+- Large volume of comments  
+- Rich metadata (timestamps, subreddit names, and post-level context)  
+- Strong coverage for later-stage war events, especially 2024–2025  
 
-#### **Twitter/X (optional)**
+**Key limitations include:**
 
-Twitter/X was considered for additional data, but full API access is limited. If time allows, supplemental tweets may be added later.
+- Uneven coverage across events  
+- Sparse U.S.-focused discussion for early events (2022–2023), limiting direct comparisons for those periods  
 
----
-
-### 2.2 Event Windows
-
-To capture before-and-after sentiment changes, each event includes a pre-event and post-event window:
-
-- **Event 1: Battle for Kyiv** — Feb 20 to Mar 20, 2022  
-- **Event 2: Kherson Liberation** — Oct 25 to Nov 25, 2022  
-- **Event 3: 2023 Stalemate / War Fatigue** — May 1 to Aug 31, 2023  
-- **Event 4: Trump Election Victory** — Oct 20 to Nov 20, 2024  
-- **Event 5: Trump–Zelenskyy White House Meeting** — Feb 15 to Mar 15, 2025  
-
-These windows were chosen to:
-
-- capture peak conversation periods  
-- avoid unrelated long-term drift  
-- ensure there is enough Reddit activity to analyze  
+The raw dataset was stored locally in `data/raw/` and intentionally excluded from version control due to its size.
 
 ---
 
-### 2.3 External Reference Sources
+## 3. Data Audit and Event Coverage
 
-To understand how each event was described and framed by media and public interest, several outside sources were used:
+### 3.1 Temporal Coverage
 
-#### **News Headlines**
+A full audit of the raw dataset was conducted using **Notebook `00_data_audit.ipynb`** to verify temporal coverage. The dataset spans the following time range:
 
-Headlines from BBC, Reuters, and AP News were collected for each event. These helped identify:
+- **Earliest timestamp:** November 2014  
+- **Latest timestamp:** July 2025  
 
-- common military terms  
-- humanitarian impact language  
-- political framing  
-- key people, places, and actions  
+This confirmed that all five target events fall within the available data window and can be analyzed using a consistent source.
 
-#### **Google Trends**
+### 3.2 Comment Volume by Event
 
-Google Trends provided search topics and queries that were trending during each event window. These results helped identify:
+After defining event-specific time windows around each key event, the following comment volumes were observed:
 
-- what people were searching for  
-- public attention spikes  
-- emerging keywords like “Ghost of Kyiv,” “sanctions,” or “Kherson”  
+| Event | Approx. Number of Comments |
+| ------ | ---------------------------- |
+| Battle for Kyiv | ~2,940 |
+| Kherson Liberation | ~795 |
+| Stalemate / War Fatigue | ~9,955 |
+| Trump Election | ~359,000 |
+| White House Meeting | ~241,000 |
 
-#### **Wikipedia Event Summaries**
-
-Wikipedia summaries were used to extract consistent factual vocabulary such as:
-
-- city names  
-- battle names  
-- key dates  
-- political actors  
-
-This helped avoid missing important proper nouns.
+A strong imbalance in comment volume is evident, particularly between early war events (2022–2023) and later political events (2024–2025). This imbalance represents a key analytical constraint and is explicitly accounted for in later stages of the analysis through conditional metrics, normalization strategies, and cautious interpretation.
 
 ---
 
-### 2.4 Keyword Dataset
+## 4. Event Extraction and Subreddit Classification
 
-The final keyword dataset is stored at:
+### 4.1 Event-Based Extraction
 
-`data/processed/ukraine_project_keywords_events1to5.csv`
+In **Notebook `01_event_extraction.ipynb`**, Reddit comments were filtered into five event-specific datasets using predefined time windows around each key event. These windows were designed to capture discussion immediately before and after each event in order to observe short-term opinion shifts.
 
-This dataset is used to filter Reddit posts for each event and is a core part of the analysis pipeline.
+Each event dataset was saved as a separate CSV file in the `data/processed/` directory, forming the foundation for subsequent sentiment, topic, and stance analyses.
 
----
+### 4.2 U.S.-Focused vs Non-U.S.-Focused Subreddits
 
-## 3. Methods
+To better isolate U.S. public opinion, subreddits were manually classified into two broad categories:
 
-### 3.1 Data Collection
+- **U.S.-focused subreddits** (e.g., `politics`, `neoliberal`, `Conservative`)
+- **Non-U.S.-focused or global subreddits** (e.g., `worldnews`, `europe`, `ukraine`)
 
-Reddit posts for each event were collected using:
+A binary indicator variable, **`is_us_focused`**, was added to each comment to enable comparative analysis between these two groups.
 
-- **Pushshift API**, which provides historical Reddit data archives  
-- **Keyword matching**, based on the event-specific keyword lists  
-- **Subreddit filters**, focusing on political or global news communities such as:  
-  - r/politics  
-  - r/worldnews  
-  - r/conservative  
-  - r/UkrainianConflict  
-
-For each event, the data includes:
-
-- a **pre-event window** (7–10 days before the event)  
-- a **post-event window** (7–10 days after the event)  
-
-This structure allows us to compare how sentiment and discussion topics changed around each key moment.
+An important limitation emerged at this stage: **early war events (Events 1–3)** contained little to no U.S.-focused subreddit activity. This constraint is explicitly acknowledged and considered in later interpretation, particularly when comparing early wartime sentiment to later, more politically driven discussions.
 
 ---
 
-### 3.2 Keyword Extraction Methodology
+## 5. Sentiment Analysis
 
-A multi-step approach was used to build the keyword lists for the five events.
+### 5.1 Method
 
-#### **Sources Used**
+Sentiment analysis was conducted using **VADER (Valence Aware Dictionary and sEntiment Reasoner)**, a rule-based sentiment model specifically designed for short, informal text such as social media comments. VADER produces a **compound sentiment score** for each comment, ranging from **−1 (very negative)** to **+1 (very positive)**.
 
-- News headlines from BBC, Reuters, AP News  
-- Google Trends search topics and queries  
-- Wikipedia summaries  
-- Political vocabulary from U.S. media  
-- Common Ukraine War hashtags  
+Each Reddit comment in the event-specific datasets was assigned a compound sentiment score, forming the basis for all subsequent sentiment aggregation and comparison.
 
-Using multiple sources helps ensure that keywords:
+### 5.2 Aggregation Strategy
 
-- capture different types of discussions (military, humanitarian, political)  
-- reflect real public search behavior  
-- match the language used on Reddit and other platforms  
+To capture sentiment trends at different levels of analysis, sentiment scores were aggregated in several ways:
 
----
+- **Subreddit-level means**, to observe how sentiment varied across communities  
+- **Event-level means**, to summarize overall sentiment around each key event  
+- **Weighted averages**, where subreddit-level sentiment was weighted by the number of comments contributed by each subreddit  
 
-### Keyword Categorization
+In addition, a **net sentiment score** was computed to capture the overall emotional direction of discussion for each event, balancing positive and negative contributions rather than relying on raw averages alone.
 
-Keywords were organized into categories to make filtering and interpretation easier.
+This multi-level aggregation approach helps reduce the influence of small or highly active subreddits and provides a more stable representation of broader discourse patterns.
 
-#### **Proper Nouns**
-Cities, leaders, and organizations (e.g., *Kyiv*, *Kherson*, *Zelensky*, *Putin*, *NATO*).  
-These terms help anchor discussions to specific places or people.
+### 5.3 Key Observations
 
-#### **Conflict / Military Vocabulary**
-Words related to combat or battlefield developments  
-(e.g., *airstrike*, *shelling*, *retreat*, *counteroffensive*).  
-These help identify posts discussing military events.
+Several high-level patterns emerged from the sentiment analysis:
 
-#### **Humanitarian / Emotional Terms**
-Words describing civilian impact or emotional reactions  
-(e.g., *refugees*, *death toll*, *evacuees*, *fleeing*).  
-These terms support sentiment analysis.
+- **Early war events (Events 1–3)** showed largely neutral to mildly negative sentiment, dominated by non-U.S.-focused subreddits.  
+- **Later events (Events 4–5)** exhibited stronger negative sentiment, particularly around major U.S. political milestones.  
+- **U.S.-focused subreddits** demonstrated sharper sentiment shifts compared to global subreddits, suggesting a stronger reaction to domestic political framing than to battlefield developments alone.  
 
-#### **Geopolitical / Policy Terms**
-Vocabulary connected to diplomacy, sanctions, foreign aid, or political decisions  
-(e.g., *sanctions*, *aid freeze*, *U.S. support*, *NATO burden*).  
-These terms capture politically framed discussions.
-
-#### **Political Discourse Keywords**
-Especially relevant for events involving U.S. elections or shifts in political messaging  
-(e.g., *“stop sending money,” “America First,” “peace deal”*).  
-These help analyze partisan trends.
+These results suggest that sentiment surrounding the Ukraine War became increasingly shaped by U.S. political context over time.
 
 ---
 
-### 3.3 Preprocessing
+## 6. Topic Modeling
 
-Before running NLP tasks, all Reddit comments were cleaned using:
+### 6.1 Method
 
-- lowercasing  
-- removing punctuation, URLs, usernames, and special characters  
-- tokenization  
-- stopword removal  
-- lemmatization  
-- filtering out non-English comments  
+To identify dominant discussion themes surrounding each event, **Latent Dirichlet Allocation (LDA)** topic modeling was applied **separately for each event-specific dataset** (Notebook `03_topic_modeling.ipynb`). Modeling events independently avoided topic dilution caused by large differences in comment volume across events.
 
-Other filters included:
+Several preprocessing steps were applied prior to modeling:
 
-- removing duplicates  
-- removing very short comments  
-- removing likely bot content  
+- **Custom text cleaning**, including lowercasing, removal of URLs, punctuation, and stopwords  
+- **Light English-language filtering**, to reduce non-English content that introduced noise in earlier iterations  
+- **Adaptive document-frequency thresholds**, where smaller events used lower minimum document-frequency values to ensure sufficient vocabulary coverage  
 
-This created a clean dataset ready for sentiment and topic modeling.
+For each event, five topics were extracted, with each topic represented by its most probable terms.
 
----
+### 6.2 Results
 
-### 3.4 Sentiment Analysis
+Topic modeling revealed **clear narrative and thematic shifts over time**:
 
-Sentiment analysis was performed using:
+- **Early war events (2022)** were dominated by discussions of military actions, border crossings, humanitarian aid, and NATO expansion.  
+- **Mid-war discourse (2023)** shifted toward narratives of stalemate, war fatigue, the Wagner Group, internal Russian dynamics, and concerns about corruption or effectiveness.  
+- **Late-stage events (2024–2025)** increasingly focused on U.S. politics, elections, military aid debates, peace negotiations, burden-sharing with Europe, and the strategic costs of continued support.  
 
-- **VADER**, a sentiment tool tailored for social media text  
-
-Sentiment scores were aggregated at:
-
-- the **post level**  
-- the **subreddit level**  
-- the **event window level**  
-
-Comparisons focus on:
-
-- **before vs. after each event**  
-- **left-leaning vs. right-leaning subreddits**  
-
-This helps identify shifts in support, criticism, or polarization.
+To improve interpretability and ensure consistency across events, topics were **manually labeled** based on their dominant terms in `04_topic_labeling.ipynb`. These labels were later used in visualization and interpretation, allowing for clearer comparison of discourse evolution across time.
 
 ---
 
-### 3.5 Topic Modeling
+## 7. Stance Analysis: Ending the War vs Continuing Support
 
-Topic modeling used:
+While sentiment analysis captures emotional tone, it does not directly indicate *policy preference*. A comment can be negative in tone while still supporting continued military aid, or positive while advocating for negotiations. To address this limitation, a dedicated stance analysis was conducted to distinguish between calls to **end the war through negotiations** and support for **continued fighting or military aid to Ukraine**.
 
-- **Latent Dirichlet Allocation (LDA)** for interpretable themes  
-- event-specific corpora to compare topic differences across time  
+### 7.1 Motivation
 
-Future improvements might include:
+The central research question of this project is whether public opinion shifted in parallel with U.S. political discourse. In recent years, political debate increasingly framed the war in terms of *ending the conflict* versus *continuing support until Ukraine regains territory*. Stance analysis was introduced to directly measure this distinction in public discourse, rather than inferring it indirectly from sentiment alone.
 
-- **BERTopic**  
-- **transformer-based clustering**  
+### 7.2 Stance Lexicon Construction
 
-Topic modeling highlights how themes of discussion shifted even when sentiment did not.
+Rather than manually inventing stance keywords, candidate phrases were extracted directly from the dataset using frequent n-grams observed across events. These phrases were then manually reviewed and categorized into three stance groups:
+
+- **End-war stance** (e.g., “end war”, “peace deal”, “peace talks”, “negotiated settlement”)
+- **Continue-fighting stance** (e.g., “support Ukraine”, “military aid”, “send weapons”, “join NATO”)
+- **Neutral or unclear** (comments without explicit stance indicators)
+
+This data-driven approach ensured that stance detection reflected *language actually used by Reddit users*, rather than externally imposed terminology.
+
+### 7.3 Comment-Level Classification
+
+Each comment was assigned a stance label based on the presence of stance-related phrases. Comments without explicit stance language were labeled as **neutral_or_unclear**. Because stance expressions are relatively rare compared to general discussion, the majority of comments fell into the neutral category.
+
+### 7.4 Conditional Stance Aggregation
+
+To avoid dilution by neutral comments, stance proportions were calculated **conditionally**, using only comments that expressed a clear stance. For each event, the following metric was computed:
+
+- Percentage of end-war vs continue-fighting stances *among stance-bearing comments only*
+
+### 7.5 Event-Level Results
+
+Across events, a clear shift emerged:
+
+- Early events (2022–2023) showed limited explicit stance expression, reflecting uncertainty and informational discussion.
+- By late events (2024–2025), stance-bearing comments increased substantially.
+- The **end-war stance grew more prevalent over time**, particularly during U.S. political milestones such as the 2024 election and the 2025 White House meeting.
+
+This pattern aligns with broader political discourse emphasizing negotiation, burden-sharing, and conflict fatigue.
+
+### 7.6 U.S.-Focused vs Non-U.S.-Focused Comparison
+
+Stance analysis was further split by subreddit classification using the `is_us_focused` variable:
+
+- For early events, U.S.-focused stance data was largely absent, limiting direct comparison.
+- For later events, **U.S.-focused subreddits consistently showed a higher proportion of end-war stances** compared to non-U.S. subreddits.
+- Non-U.S. subreddits retained relatively stronger support for continued fighting, though the gap narrowed over time.
+
+This divergence suggests that U.S. domestic political considerations increasingly shaped public discourse, especially as the war intersected with electoral politics.
+
+### 7.7 Stance Index
+
+To summarize stance directionality, a stance index was computed as:
+
+stance_index = pct_continue_fighting − pct_end_war
+
+Negative values indicate dominance of end-war stances, while positive values indicate support for continued fighting. The stance index became increasingly negative in later events, reinforcing evidence of growing war-fatigue and negotiation-oriented discourse.
+
+### 7.8 Limitations
+
+Several limitations apply to this analysis:
+
+- Stance detection relies on explicit phrasing and likely underestimates implicit positions.
+- Early events suffer from sparse U.S.-focused data.
+- Reddit users are not representative of the general population.
+
+Despite these constraints, stance analysis provides a valuable complementary perspective to sentiment and topic modeling, enabling a more direct examination of policy-relevant opinion shifts.
 
 ---
 
-## (Sections 4–7 will be added once results are produced.)
+## 8. Visualization and Comparative Analysis
+
+Visualizations play an important role in this project by turning large amounts of text data into patterns that are easier to understand and compare. Rather than presenting figures as isolated results, each visualization was designed to support comparisons across events, sentiment, subreddit type, and stance.
+
+### 8.1 Event-Level Sentiment Trends
+
+Event-level sentiment plots summarize the average emotional tone of Reddit discussions around each key event.
+
+Two broad patterns stand out:
+
+- **Early events (2022–2023)** show sentiment values close to neutral. This suggests that discussions during the early stages of the war were often informational or uncertain, rather than strongly emotional.
+- **Later events (2024–2025)** display noticeably more negative sentiment, especially around U.S. political milestones such as the presidential election and the White House meeting.
+
+This shift supports the idea that as the war dragged on and became more connected to U.S. domestic politics, emotional reactions intensified.
+
+### 8.2 Why Net Sentiment Is Useful
+
+In addition to average sentiment scores, the analysis includes a **net sentiment metric** that captures the overall balance between positive and negative comments.
+
+Net sentiment is helpful because:
+
+- It smooths out noisy fluctuations from mixed reactions.
+- It makes it easier to see the *direction* of public mood rather than small score changes.
+- It allows clearer comparisons between events with very different numbers of comments.
+
+The net sentiment plot shows a clear downward trend over time, reinforcing the observation that discussions became more critical and pessimistic as the conflict continued.
+
+### 8.3 U.S.-Focused vs Non-U.S.-Focused Sentiment
+
+To better isolate U.S. public opinion, sentiment results were split using the `is_us_focused` variable introduced during event extraction.
+
+Several patterns emerge:
+
+- Early events have **very limited U.S.-focused participation**, which restricts direct comparison for 2022–2023.
+- In later events, U.S.-focused subreddits show **stronger sentiment shifts** than non-U.S. subreddits.
+- The largest divergence appears during the 2024 election and the 2025 White House meeting.
+
+This suggests that U.S. domestic political context played a significant role in shaping emotional responses to the war.
+
+### 8.4 Conditional Stance Visualizations
+
+Stance visualizations focus on **conditional percentages**, meaning that only comments explicitly expressing a stance are included.
+
+This approach is important because:
+
+- Most Reddit comments are neutral or informational.
+- Including neutral comments would hide meaningful differences between opposing positions.
+
+By conditioning on stance-bearing comments, the plots reveal:
+
+- A steady increase in **end-war stances** over time.
+- A declining share of **continue-fighting stances**, especially in later events tied to U.S. politics.
+
+These trends are difficult to see using sentiment analysis alone and highlight the value of stance-based analysis.
+
+### 8.5 Comparing U.S. and Non-U.S. Stance Patterns
+
+Side-by-side comparisons between U.S.-focused and non-U.S.-focused subreddits show clear structural differences:
+
+- U.S.-focused subreddits consistently display a higher share of end-war stances in 2024–2025.
+- Non-U.S.-focused subreddits remain more supportive of continued fighting, although the gap narrows over time.
+
+This comparison supports the interpretation that U.S. public discourse increasingly reflected domestic political debates about aid, elections, and negotiation strategies.
+
+### 8.6 Why Visualization Matters in This Project
+
+Overall, visualization is essential for making sense of the results in this project. It helps:
+
+- Address strong data imbalance across events,
+- Compare discussions across different subreddit types,
+- Highlight stance shifts that are not obvious from sentiment scores alone.
+
+Rather than making causal claims, the visual results provide clear and interpretable evidence of how online public discourse evolved alongside major political and military developments over time.
+
+---
+
+## 9. Discussion and Interpretation
+
+The combined results of this project show how public discourse surrounding the Ukraine War evolved over time, and how shifts in U.S. political messaging were reflected in online discussions. By integrating sentiment analysis, topic modeling, and stance analysis across five key events, the analysis reveals consistent patterns in how the war was framed, debated, and emotionally processed on Reddit.
+
+### 9.1 Evolution of Public Sentiment Over Time
+
+One of the clearest findings is that public sentiment became more negative as the war progressed. Early discussions during the Battle for Kyiv were relatively neutral, with many comments focused on information sharing, uncertainty, and immediate reactions to the invasion. As the conflict extended into later years, sentiment scores declined, especially around politically charged moments such as the 2024 U.S. election and the 2025 White House meeting.
+
+This trend suggests that prolonged conflict, rising costs, and growing political debate may have contributed to increasing frustration and fatigue in public discourse. Rather than reflecting a single turning point, sentiment appears to shift gradually as the war becomes more embedded in domestic political narratives.
+
+### 9.2 Topic Shifts Reflect Changing Narratives
+
+Topic modeling reinforces this temporal shift in framing. Early topics focused heavily on military developments, borders, NATO expansion, and immediate humanitarian concerns. During the stalemate period, discussions increasingly centered on Wagner Group activity, internal Russian dynamics, and perceptions of momentum or lack thereof.
+
+By late 2024 and early 2025, topics shifted decisively toward political and economic themes: elections, aid debates, burden-sharing, peace negotiations, and U.S. leadership. This progression highlights how the war transitioned from an external military crisis to a recurring issue in U.S. domestic politics.
+
+### 9.3 U.S.-Focused vs Non-U.S.-Focused Discourse
+
+A key objective of this project was to distinguish U.S.-focused public opinion from broader global discussions. The analysis shows that early events lacked meaningful U.S.-focused participation, limiting conclusions about American public opinion in 2022–2023.
+
+However, once U.S.-focused subreddits became active in later events, clear differences emerged. U.S.-focused discussions showed stronger sentiment shifts and a higher prevalence of end-war stances compared to non-U.S.-focused subreddits. This suggests that U.S. public discourse may be more sensitive to domestic political incentives, election cycles, and economic considerations than global discussions.
+
+### 9.4 Interpreting Stance Toward Ending the War
+
+Stance analysis adds an important layer beyond sentiment. While sentiment captures emotional tone, stance analysis directly addresses *what people want to happen*.
+
+Conditional stance results show a steady increase in end-war preferences over time, particularly in U.S.-focused subreddits. This pattern aligns with the growing presence of phrases related to peace deals, negotiations, and aid skepticism in later events.
+
+Importantly, this does not necessarily imply opposition to Ukraine itself. Instead, it suggests increasing public openness to ending the conflict through negotiation, especially as the war becomes prolonged and politically costly.
+
+### 9.5 Alignment Between Political Rhetoric and Public Opinion
+
+Taken together, the results suggest partial alignment between political rhetoric and online public discourse. As U.S. political leaders increasingly debated aid levels and negotiation strategies, similar themes became more visible in Reddit discussions—particularly in U.S.-focused communities.
+
+However, the data also shows that public discourse is not monolithic. Non-U.S.-focused subreddits remained more consistently supportive of continued fighting, highlighting differences in perspective based on geographic and political context.
+
+### 9.6 What This Analysis Does—and Does Not—Claim
+
+This project does not claim that Reddit users represent the general population, nor that observed shifts are causal. Instead, it demonstrates how large-scale online discussions reflect evolving narratives, priorities, and political contexts.
+
+Within those limits, the findings suggest that public opinion—as expressed in online discourse—became more polarized, more political, and increasingly focused on ending the conflict over time, especially within U.S.-centered spaces.
+
+---
+
+## 10. Limitations
+
+While this project provides meaningful insights into how public discourse around the Ukraine War evolved over time, several limitations should be acknowledged.
+
+### 10.1 Data Source Constraints
+
+The analysis relies entirely on Reddit data, which represents a specific subset of online users rather than the general population. Reddit users tend to be younger, more politically engaged, and more active in online discussions than average citizens. As a result, the findings should be interpreted as reflecting *online discourse* rather than public opinion in a strict survey-based sense.
+
+Additionally, the original plan to collect data directly through Reddit’s official API was not feasible due to access limitations and approval constraints. As a result, a large Kaggle dataset was used instead. While this dataset offered broad coverage and rich metadata, it also imposed constraints on sampling control and subreddit selection.
+
+### 10.2 Uneven Event Coverage
+
+A major limitation of the dataset is the uneven distribution of comments across events. Early events (2022–2023) had substantially fewer comments than later events (2024–2025), particularly in U.S.-focused subreddits. This imbalance limited the ability to directly compare early and late events on equal footing.
+
+To address this, the analysis:
+
+- explicitly reports comment counts per event,
+- avoids over-interpreting early-event results,
+- and uses conditional metrics where appropriate.
+
+### 10.3 Subreddit-Based Geographic Approximation
+
+U.S.-focused versus non-U.S.-focused discourse was inferred based on subreddit classification rather than user location data. While this approach captures broad differences in discussion context, it cannot guarantee that all participants in a given subreddit are based in the United States.
+
+This limitation is particularly relevant for global subreddits such as *worldnews* or *europe*, where discussions may mix perspectives from multiple countries.
+
+### 10.4 Sentiment and Stance Classification Limits
+
+Sentiment analysis using VADER provides a useful high-level signal but cannot fully capture sarcasm, irony, or complex rhetorical strategies common in political discussions. Similarly, stance analysis relies on keyword and phrase matching, which may miss implicit or nuanced positions.
+
+The initial stance analysis produced a high proportion of neutral classifications, highlighting the difficulty of detecting intent in short-form text. Conditional stance analysis helped address this issue but still reflects only explicit stance expressions.
+
+### 10.5 Topic Modeling Interpretability
+
+Topic modeling results depend on modeling choices such as the number of topics, document-frequency thresholds, and text preprocessing steps. While adaptive thresholds and manual topic labeling improved interpretability, topics should be viewed as *patterns of discussion* rather than definitive categories.
+
+Different modeling choices could yield alternative but equally plausible topic structures.
+
+### 10.6 Temporal and Contextual Bias
+
+Finally, public discourse is shaped by external events beyond those explicitly modeled here, including economic conditions, media framing, and unrelated political developments. As a result, observed changes in sentiment or stance cannot be attributed solely to the Ukraine War itself.
+
+---
+
+Overall, these limitations highlight the complexity of studying public opinion through online discourse. Rather than weakening the analysis, acknowledging these constraints provides important context for interpreting the findings responsibly.
+
+---
+
+## 11. Conclusion
+
+This project set out to examine how public discourse around the Ukraine War evolved over time, with a particular focus on whether shifts in U.S. political messaging were reflected in online public opinion. Using Reddit comments as a proxy for public discourse, the analysis combined sentiment analysis, topic modeling, and stance detection across five key events between 2022 and 2025.
+
+Several clear patterns emerged from the analysis.
+
+First, public discussion of the Ukraine War changed substantially as the conflict moved from its early invasion phase into a prolonged and politically contested issue. Early events were dominated by military developments, humanitarian concerns, and uncertainty. Over time, especially during the 2024 U.S. election and the 2025 White House meeting, discussions increasingly centered on political leadership, financial aid, burden-sharing, and potential exit strategies.
+
+Second, sentiment analysis revealed that emotional tone was not static across events. While early discussions were often neutral to slightly negative, later events showed stronger and more polarized sentiment, particularly in U.S.-focused subreddits. Net sentiment scores highlighted that political milestones in the United States coincided with sharper emotional reactions than battlefield developments alone.
+
+Third, topic modeling confirmed that attention shifted from operational and battlefield topics toward domestic political debates in the United States. Late-stage topics emphasized elections, aid spending, NATO commitments, and peace negotiations, reflecting how the war became increasingly embedded in U.S. political discourse rather than being discussed solely as a foreign conflict.
+
+Fourth, stance analysis provided additional insight beyond sentiment alone. Although most comments did not explicitly express a clear stance, conditional analysis of stance-bearing comments showed a growing preference for ending the war over continuing military engagement, particularly during later events. This trend was more pronounced in U.S.-focused subreddits, suggesting a divergence between U.S. domestic discourse and broader global discussions.
+
+Taken together, these findings suggest that prolonged conflicts can undergo a narrative transformation in public discourse. What begins as a largely humanitarian and military issue may gradually become reframed as a domestic political question, shaped by elections, leadership changes, and policy debates. In the case of the Ukraine War, this shift appears especially visible in U.S.-centered online discussions.
+
+While the results should be interpreted with care due to data and methodological limitations, the project demonstrates how NLP techniques applied to large-scale social media data can help track evolving public narratives and identify points where political discourse and public sentiment begin to diverge or converge.
+
+---
+
+## 12. Future Work
+
+This project provides a snapshot of how public discourse around the Ukraine War evolved over time, but several extensions could deepen and refine the analysis.
+
+First, future work could improve stance detection by moving beyond keyword-based methods toward supervised or semi-supervised models. Manually labeled training data or transformer-based classifiers could better capture nuanced positions that are not explicitly expressed through clear stance phrases, reducing the large neutral category observed in this study.
+
+Second, expanding the dataset—particularly for early war events—would allow for more balanced comparisons across time. Additional historical Reddit data or complementary sources such as Twitter/X, news comments, or forum discussions could help address the uneven coverage and strengthen conclusions about early public reactions.
+
+Third, the analysis could be extended to track individual subreddits or user-level trajectories over time. Examining how specific communities changed their tone or stance across multiple events would provide a more granular understanding of polarization and narrative shifts.
+
+Fourth, cross-national comparisons represent a promising direction. Rather than focusing primarily on U.S.-focused versus non-U.S.-focused subreddits, future studies could incorporate language-based or geolocation-based methods to compare discourse across countries more systematically.
+
+Finally, the analytical pipeline developed in this project could be adapted to other prolonged geopolitical conflicts. Applying the same combination of sentiment analysis, topic modeling, and stance detection to different case studies would help assess whether the patterns observed here are unique to the Ukraine War or reflect broader dynamics in public responses to long-running conflicts.
+
+Overall, this project establishes a flexible framework for studying evolving public opinion and highlights how computational social science methods can be used to bridge political events and everyday online discourse.
